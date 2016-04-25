@@ -2,7 +2,7 @@ import java.io.File;
 import java.util.*;
 
 
-class FileReader
+class InputReader
 {
 
 // compute filter parameters for netid jf446 - Jerome Francis
