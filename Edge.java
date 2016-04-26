@@ -8,4 +8,10 @@ public class Edge{
 		this.source = src;
 		this.destination = dest;
 	}
+	
+	// GETTERS
+	public int getSource()
+	{ return this.source; }
+	public int getDestination()
+	{ return this.destination; }
 }
