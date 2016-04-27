@@ -7,7 +7,7 @@ public class TestFileReader{
 		
 
 		try{
-			Scanner sc = new Scanner(new File("edges.txt"));
+			Scanner sc = new Scanner(new File("sampleInput.txt"));
 			String line = sc.nextLine();
 
 			String[] stringArray = line.split("\\s+");
