@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.Scanner;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -63,7 +64,7 @@ public class Main {
 		
 		job.setInputFormatClass(KeyValueTextInputFormat.class);
 		
-		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputKeyClass(LongWritable.class);
 		job.setMapOutputValueClass(Text.class);
 		FileInputFormat.setInputPaths(job, input);
 		FileOutputFormat.setOutputPath(job, jobOutput);

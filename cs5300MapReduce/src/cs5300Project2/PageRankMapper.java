@@ -1,12 +1,14 @@
 package cs5300Project2;
 
 import java.io.IOException;
+
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class PageRankMapper extends Mapper<Text, Text, Text, Text> {
+public class PageRankMapper extends Mapper<Text, Text, LongWritable, Text> {
 	
-	private Text outKey = new Text();
+	private LongWritable outKey = new LongWritable();
 	private Text outValue = new Text();
 
 	public void map(Text ikey, Text ivalue, Context context) throws IOException, InterruptedException {
@@ -19,7 +21,9 @@ public class PageRankMapper extends Mapper<Text, Text, Text, Text> {
 		
 		String graphData = "G" + ivalue.toString();
 		
-		outKey.set(ikey.toString());
+		System.out.println("input value is " + ivalue.toString());
+		
+		outKey.set(Long.parseLong(ikey.toString()));
 		outValue.set(graphData);
 		
 		context.write(outKey, outValue);
@@ -30,7 +34,7 @@ public class PageRankMapper extends Mapper<Text, Text, Text, Text> {
 			String [] childNodes = nodeData[1].split(",");
 			
 			for (int i = 0; i < childNodes.length; i++){
-				outKey.set(childNodes[i]);
+				outKey.set(Long.parseLong(childNodes[i]));
 				outValue.set("P" + (pr / childNodes.length));
 				context.write(outKey, outValue);
 			}

@@ -2,10 +2,11 @@ package cs5300Project2;
 
 import java.io.IOException;
 
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-public class PageRankReducer extends Reducer<Text, Text, Text, Text> {
+public class PageRankReducer extends Reducer<LongWritable, Text, Text, Text> {
 	
 	private static final double ALPHA = 0.85;
 	public static String CONF_NUM_NODES = "pagerank.numnodes";
@@ -21,9 +22,10 @@ public class PageRankReducer extends Reducer<Text, Text, Text, Text> {
 		numNodes = context.getConfiguration().getInt(CONF_NUM_NODES, 0);
 	}
 	
-	private Text outValue = new Text();
+	//private Text outValue = new Text();
 
-	public void reduce(Text _key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+	public void reduce(LongWritable _key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+		Text outValue = new Text();
 		
 		double newPageRank = 0.0;
 		
@@ -45,6 +47,7 @@ public class PageRankReducer extends Reducer<Text, Text, Text, Text> {
 			else if (input.substring(0, 1).equals("P")){
 				newPageRank += Double.parseDouble(input.substring(1));
 			}
+		}
 			
 			newPageRank = (1.0 - ALPHA) / numNodes + ALPHA * newPageRank;
 			
@@ -56,11 +59,14 @@ public class PageRankReducer extends Reducer<Text, Text, Text, Text> {
 			
 			outValue.set(graph);
 			
-			context.write(_key, outValue);
+			Text outkey = new Text();
+			outkey.set("" + _key.get());
+			
+			context.write(outkey, outValue);
 			
 			
 
-		}
+		
 	}
 
 }
