@@ -2,11 +2,10 @@ package cs5300Project2;
 
 import java.io.IOException;
 
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-public class PageRankReducer extends Reducer<LongWritable, Text, LongWritable, Text> {
+public class PageRankReducer extends Reducer<Text, Text, Text, Text> {
 	
 	private static final double ALPHA = 0.85;
 	public static String CONF_NUM_NODES = "pagerank.numnodes";
@@ -24,7 +23,7 @@ public class PageRankReducer extends Reducer<LongWritable, Text, LongWritable, T
 	
 	private Text outValue = new Text();
 
-	public void reduce(LongWritable _key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+	public void reduce(Text _key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 		
 		double newPageRank = 0.0;
 		

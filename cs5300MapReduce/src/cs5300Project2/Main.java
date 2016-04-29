@@ -1,15 +1,11 @@
 package cs5300Project2;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map.Entry;
 import java.util.Scanner;
-import java.util.TreeMap;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -67,7 +63,7 @@ public class Main {
 		
 		job.setInputFormatClass(KeyValueTextInputFormat.class);
 		
-		job.setMapOutputKeyClass(LongWritable.class);
+		job.setMapOutputKeyClass(Text.class);
 		job.setMapOutputValueClass(Text.class);
 		FileInputFormat.setInputPaths(job, input);
 		FileOutputFormat.setOutputPath(job, jobOutput);
@@ -114,6 +110,8 @@ public class Main {
 			}
 		}
 		
+		sc.close();
+		
 		//Integer maxKey = graph.getGraph().lastKey();
 		
 		for (int i = 0; i <= totalNodes; i++){
@@ -143,7 +141,8 @@ public class Main {
 		
 		
 		for (Entry<Integer, AdjacencyList> entry : graph.getGraph().entrySet()){		
-			result = entry.getKey().toString() + "\t" + entry.getKey().toString() + "#" + entry.getValue().toString() + "#" + dummyPR + "#" + startPR;
+			result = entry.getKey().toString() + "\t" + entry.getKey().toString()
+					+ "#" + entry.getValue().toString() + "#" + dummyPR + "#" + startPR;
 			writer.println(result);
 		}
 		
