@@ -27,15 +27,18 @@ public class Main {
 		
 		File formattedInputFile = new File(output.toString() + "/formattedInput.txt");
 		
-		createFormattedFile(inputFile, formattedInputFile);
+		int numNodes = createFormattedFile(inputFile, formattedInputFile);
 		
 		//System.out.println(input.toString());
+		
+		int currentIteration = 1;
+		
 		
 		
 		
 	}
 
-	private static void createFormattedFile(String inputFile, File formattedInputFile) throws Exception{
+	private static int createFormattedFile(String inputFile, File formattedInputFile) throws Exception{
 		File file = new File(inputFile);
 		
 		Scanner sc = new Scanner(file);
@@ -91,11 +94,12 @@ public class Main {
 		
 		
 		for (Entry<Integer, AdjacencyList> entry : graph.getGraph().entrySet()){		
-			result = entry.getKey().toString() + "#" + entry.getValue().toString() + "#" + dummyPR + "#" + startPR;
+			result = entry.getKey().toString() + "\t" + entry.getKey().toString() + "#" + entry.getValue().toString() + "#" + dummyPR + "#" + startPR;
 			writer.println(result);
 		}
 		
 		writer.close();
+		return graph.getGraph().entrySet().size();
 
 	}
 	
