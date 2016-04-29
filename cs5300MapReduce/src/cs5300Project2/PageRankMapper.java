@@ -13,7 +13,7 @@ public class PageRankMapper extends Mapper<LongWritable, Text, LongWritable, Tex
 	private Text outValue = new Text();
 
 	public void map(LongWritable ikey, Text ivalue, Context context) throws IOException, InterruptedException {
-		
+		System.out.println("running a pass");
 		String[] nodeData = ivalue.toString().split("#");
 		
 		String graphData = "G" + ivalue.toString();

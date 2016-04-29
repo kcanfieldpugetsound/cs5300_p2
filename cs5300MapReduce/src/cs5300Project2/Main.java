@@ -34,7 +34,9 @@ public class Main {
 		
 		File formattedInputFile = new File(output.toString() + "/formattedInput.txt");
 		
-		int numNodes = createFormattedFile(inputFile, formattedInputFile);
+		int totalNodes = 10;
+		
+		int numNodes = createFormattedFile(inputFile, formattedInputFile, totalNodes);
 		
 		//System.out.println(input.toString());
 		double converged = 0.001;
@@ -70,6 +72,8 @@ public class Main {
 		FileInputFormat.setInputPaths(job, input);
 		FileOutputFormat.setOutputPath(job, jobOutput);
 		
+		org.apache.log4j.BasicConfigurator.configure();
+		
 		if (!job.waitForCompletion(true)){
 			throw new Exception("The job has failed to complete");
 		}
@@ -83,7 +87,7 @@ public class Main {
 		
 	}
 
-	private static int createFormattedFile(String inputFile, File formattedInputFile) throws Exception{
+	private static int createFormattedFile(String inputFile, File formattedInputFile, int totalNodes) throws Exception{
 		File file = new File(inputFile);
 		
 		Scanner sc = new Scanner(file);
@@ -110,9 +114,9 @@ public class Main {
 			}
 		}
 		
-		Integer maxKey = graph.getGraph().lastKey();
+		//Integer maxKey = graph.getGraph().lastKey();
 		
-		for (int i = 0; i <= maxKey.intValue(); i++){
+		for (int i = 0; i <= totalNodes; i++){
 			graph.addSinkNode(new Integer(i));
 		}
 		
