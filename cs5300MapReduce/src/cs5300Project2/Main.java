@@ -1,6 +1,7 @@
 package cs5300Project2;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map.Entry;
 import java.util.Scanner;
@@ -8,6 +9,12 @@ import java.util.TreeMap;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class Main {
 
@@ -30,10 +37,48 @@ public class Main {
 		int numNodes = createFormattedFile(inputFile, formattedInputFile);
 		
 		//System.out.println(input.toString());
+		double converged = 0.001;
 		
 		int currentIteration = 1;
+		while(numNodes > 0){
+			Path jobOutput = new Path(output, String.valueOf(currentIteration));
+			
+			if (runPageRank(input, jobOutput, numNodes) < converged){
+				System.out.println("We have converged below " + converged);
+				break;
+			}
+			input = jobOutput;
+			currentIteration++;
+		}
 		
 		
+		
+	}
+
+	private static double runPageRank(Path input, Path jobOutput, int numNodes) throws Exception {
+		Configuration config = new Configuration();
+		config.setInt(PageRankReducer.CONF_NUM_NODES, numNodes);
+		Job job = Job.getInstance(config, "NaivePageRank");
+		job.setJarByClass(Main.class);
+		job.setMapperClass(PageRankMapper.class);
+		job.setReducerClass(PageRankReducer.class);
+		
+		job.setInputFormatClass(KeyValueTextInputFormat.class);
+		
+		job.setMapOutputKeyClass(LongWritable.class);
+		job.setMapOutputValueClass(Text.class);
+		FileInputFormat.setInputPaths(job, input);
+		FileOutputFormat.setOutputPath(job, jobOutput);
+		
+		if (!job.waitForCompletion(true)){
+			throw new Exception("The job has failed to complete");
+		}
+		
+		long scaledConvergence = job.getCounters().findCounter(PageRankReducer.Counter.CONVERGENCE).getValue();
+		
+		return ((double) scaledConvergence / (double) PageRankReducer.SCALING_FACTOR / (double) numNodes);
+		
+		//return conv;
 		
 		
 	}
