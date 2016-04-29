@@ -16,10 +16,10 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 public class Main {
 
 	public static void main(String[] args) throws Exception{
-		pageRank(args[0], args[1]);
+		pageRank(args[0], args[1], args[2]);
 	}
 
-	private static void pageRank(String inputFile, String outputDir) throws Exception{
+	private static void pageRank(String inputFile, String outputDir, String numRuns) throws Exception{
 		Configuration config = new Configuration();
 		Path output = new Path(outputDir);
 		output.getFileSystem(config).delete(output, true);
@@ -27,7 +27,7 @@ public class Main {
 		
 		Path input = new Path(output, "formattedInput.txt");
 		
-		
+		int maxRuns = Integer.parseInt(numRuns);
 		
 		File formattedInputFile = new File(output.toString() + "/formattedInput.txt");
 		
@@ -38,17 +38,28 @@ public class Main {
 		//System.out.println(input.toString());
 		double converged = 0.001;
 		
+		File convergenceFile = new File("convergence.txt");
+		
+		if (!convergenceFile.exists())
+			convergenceFile.createNewFile();
+		
+		PrintWriter logger = new PrintWriter(convergenceFile);
+		
 		int currentIteration = 1;
-		while(numNodes > 0){
+		while(currentIteration <= maxRuns){
 			Path jobOutput = new Path(output, String.valueOf(currentIteration));
-			
+			/*
 			if (runPageRank(input, jobOutput, numNodes) < converged){
 				System.out.println("We have converged below " + converged);
-				break;
-			}
+				//break;
+			}*/
+			logger.println("Convergence on run " + currentIteration + ": " + runPageRank(input, jobOutput, totalNodes));
+			
 			input = jobOutput;
 			currentIteration++;
 		}
+		
+		logger.close();
 		
 		
 		
