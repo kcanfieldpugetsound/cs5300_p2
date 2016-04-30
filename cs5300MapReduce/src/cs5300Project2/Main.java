@@ -21,6 +21,7 @@ public class Main {
 		pageRank(args[0], args[1], args[2]);
 	}
 
+	@SuppressWarnings("unused")
 	private static void pageRank(String inputFile, String outputDir, String numRuns) throws Exception{
 		Configuration config = new Configuration();
 		Path output = new Path(outputDir);
