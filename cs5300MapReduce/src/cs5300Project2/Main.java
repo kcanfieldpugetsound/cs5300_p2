@@ -14,6 +14,8 @@ import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class Main {
+	
+	private static long numEdges = 0;
 
 	public static void main(String[] args) throws Exception{
 		pageRank(args[0], args[1], args[2]);
@@ -44,7 +46,7 @@ public class Main {
 			convergenceFile.createNewFile();
 		
 		PrintWriter logger = new PrintWriter(convergenceFile);
-		
+		logger.println("Number of edges is " + numEdges);
 		int currentIteration = 1;
 		while(currentIteration <= maxRuns){
 			Path jobOutput = new Path(output, String.valueOf(currentIteration));
@@ -115,6 +117,7 @@ public class Main {
 			
 			if (!(lowerBound <= Double.valueOf(stringArray[3]).doubleValue()
 					&& Double.valueOf(stringArray[3]).doubleValue() <= upperBound)){
+				numEdges++;
 				source = Integer.valueOf(stringArray[1]);
 				destination = Integer.valueOf(stringArray[2]);
 				graph.addEdge(source, destination);
