@@ -25,47 +25,61 @@ public class PageRankReducer extends Reducer<LongWritable, Text, Text, Text> {
 	//private Text outValue = new Text();
 
 	public void reduce(LongWritable _key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+		Text outKey = new Text();
 		Text outValue = new Text();
 		
-		double newPageRank = 0.0;
+		Integer nodeId = new Integer(_key.toString());
 		
-		double oldPageRank = 0.0;
+		//process incoming data
 		
-		String graph = "";
-		
-		for (Text val : values) {
-			String input = val.toString();
+		Node n;
+		List<Double> incomingPageRanks = new ArrayList<Double>();
+		for (Text t : values) {
+			String text = t.toString();
+			char type = text.charAt(0);
+			String contents = text.substring(1);
 			
-			if (input.substring(0, 1).equals("G")){
-				
-				String[] graphData = input.substring(1).split("#");
-				graph += graphData[0] + "#" + graphData[1] + "#" + graphData[3];
-				oldPageRank = Double.parseDouble(graphData[3]);
-				
-				
-			}
-			else if (input.substring(0, 1).equals("P")){
-				newPageRank += Double.parseDouble(input.substring(1));
+			switch (type) {
+			case 'N':
+				n = new Node(contents);
+				break;
+			case 'P':
+				incomingPageRanks.add(new Double(contents));
 			}
 		}
-			
-			newPageRank = (1.0 - ALPHA) / numNodes + ALPHA * newPageRank;
-			
-			graph += "#" + newPageRank;
-			
-			long delta = (long)(SCALING_FACTOR * Math.abs(oldPageRank - newPageRank) / newPageRank);  
-			
-			context.getCounter(Counter.CONVERGENCE).increment(delta);
-			
-			outValue.set(graph);
-			
-			Text outkey = new Text();
-			outkey.set("" + _key.get());
-			
-			context.write(outkey, outValue);
-			
-			
-
+		
+		//perform page rank algorithm
+		
+		//shift currPageRank -> prevPageRank
+		n.setPrevPageRank(n.getCurrPageRank);
+		n.setCurrPageRank(0);
+		
+		//add page ranks to node
+		double oldPR;
+		double newPR;
+		for (Double pr : incomingPageRanks) {
+			oldPR = n.getCurrPageRank();
+			newPR = oldPR + pr;
+			n.setCurrPageRank(newPR);
+		}
+		
+		//apply damping factor
+		newPR = ((1 - ALPHA) / numNodes)) + (ALPHA * newPR);
+		
+		//calculate convergence
+		long delta = (long) 
+			(SCALING_FACTOR * 
+				(Math.abs(n.getPrevPageRank() - n.getCurrPageRank()) / n.getCurrPageRank()));  
+		
+		context.getCounter(Counter.CONVERGENCE).increment(delta);
+		
+		outValue.set(graph);
+		
+		//write results
+		outKey.set(n.nodeId());
+		outValue.set(n.toString());
+		
+		context.write(outKey, outValue);
 		
 	}
 
