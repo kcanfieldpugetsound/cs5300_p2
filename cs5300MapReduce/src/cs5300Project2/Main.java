@@ -27,8 +27,11 @@ public class Main {
 			createFormattedFile(args[1], formattedInputFile, Integer.parseInt(args[3]));
 		}
 		else{
-			System.err.println("Usage: Use args <pre inputFile outputDirectory totalNumberofNodes> to preprocess edges.txt or your input file");
-			System.err.println("Usage: Use args <run outputDirectory numIterations totalNumberOfNodes> to run mapreduce on a preprocessed file");
+			System.err.println("Usage: Use args <pre inputFile outputDirectory totalNumberofNodes> to preprocess edges.txt or your input file. "
+					+ "Put the generated file (input.txt -- DO NOT RENAME) in the output root folder when you run mapreduce.");
+			System.err.println("Usage: Use args <run outputDirectory numIterations totalNumberOfNodes> to run mapreduce on a preprocessed file."
+					+ "\nThis requires a file called input.txt, following our strict formatting rules, in the top level of the outputDirectory."
+					+ "\nFile format: nodeId	nodeId#child1,child2,child3,...,childN#prevPageRank#currentPageRank");
 			System.err.println("Note: If you were to do a run of y iterations, then a run of x (x < y) iterations, "
 					+ "the output folders a for x < a <= y will remain in the output directory unless manually deleted.");
 			

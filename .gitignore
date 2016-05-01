@@ -2,6 +2,5 @@ edges.txt
 blocks.txt
 cs5300MapReduce/bin/*
 *.class
-cs5300MapReduce/output/*
 .classpath
 .project
