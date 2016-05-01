@@ -19,14 +19,18 @@ public class Main {
 
 	public static void main(String[] args) throws Exception{
 		
-		if (args.length == 3)
-		pageRank(args[0], args[1], args[2]);
+		if (args[0].equals("run") && args.length == 4)
+		pageRank(args[1], args[2], args[3]);
+		else if (args[0].equals("pre") && args.length == 4){
+			Path output = new Path(args[2]);
+			File formattedInputFile =  new File(output.toString() + "/input.txt");
+			createFormattedFile(args[1], formattedInputFile, Integer.parseInt(args[3]));
+		}
 		else{
-			System.err.println("This jar takes three arguments: the directory where your input file (must be called input.txt) is, "
-					+ "the number of runs you want to execute, "
-					+ "and the total number nodes in your graph (to make sinks)");
-			System.err.println("Each run will appear as a subdirectory in your input directory");
-			System.err.println("You can generate the input file from our blocked Map Reduce. This will ignore the blocks data");
+			System.err.println("Usage: Use args <pre inputFile outputDirectory totalNumberofNodes> to preprocess edges.txt or your input file");
+			System.err.println("Usage: Use args <run outputDirectory numIterations totalNumberOfNodes> to run mapreduce on a preprocessed file");
+			System.err.println("Note: If you were to do a run of y iterations, then a run of x (x < y) iterations, "
+					+ "the output folders a for x < a <= y will remain in the output directory unless manually deleted.");
 			
 		}
 		
@@ -34,24 +38,26 @@ public class Main {
 	
 	
 
-	@SuppressWarnings("unused")
+	
 	private static void pageRank(String outputDir, String numRuns, String numberofnodes) throws Exception{
-		//Configuration config = new Configuration();
+		Configuration config = new Configuration();
+		System.out.println("configuring to run mapreduce");
 		Path output = new Path(outputDir);
 		//output.getFileSystem(config).delete(output, true);
 		//output.getFileSystem(config).mkdirs(output);
+		
 		
 		Path input = new Path(output, "input.txt");
 		
 		int maxRuns = Integer.parseInt(numRuns);
 		
-		File formattedInputFile = new File(output.toString() + "/input.txt");
+		//File formattedInputFile = new File(output.toString() + "/input.txt");
 		
 		int totalNodes = Integer.parseInt(numberofnodes);
 		
 		
 		//if (shouldPreprocess.equals("1"))
-			//createFormattedFile(inputFile, formattedInputFile, totalNodes);
+		//createFormattedFile(inputFile, formattedInputFile, totalNodes);
 		
 		//System.out.println(input.toString());
 		double converged = 0.001;
@@ -61,17 +67,23 @@ public class Main {
 		if (!convergenceFile.exists())
 			convergenceFile.createNewFile();
 		
+		
+		
 		PrintWriter logger = new PrintWriter(convergenceFile);
 		logger.println("Number of edges is " + numEdges);
 		int currentIteration = 1;
+		System.out.println("finshed configuration. Starting mapreduce.");
 		while(currentIteration <= maxRuns){
 			Path jobOutput = new Path(output, String.valueOf(currentIteration));
-			/*
-			if (runPageRank(input, jobOutput, numNodes) < converged){
-				System.out.println("We have converged below " + converged);
+			jobOutput.getFileSystem(config).delete(jobOutput, true);
+			
+			double convValue = runPageRank(input, jobOutput, totalNodes);
+			
+			if (convValue < converged){
+				System.out.println("We have converged below " + converged + " on iteration " + currentIteration);
 				//break;
-			}*/
-			logger.println("Convergence on run " + currentIteration + ": " + runPageRank(input, jobOutput, totalNodes));
+			}
+			logger.println("Convergence on run " + currentIteration + ": " + convValue);
 			
 			input = jobOutput;
 			currentIteration++;
@@ -129,28 +141,31 @@ public class Main {
 		Integer source = null, destination = null;
 		
 		while (sc.hasNextLine()){
-			stringArray = sc.nextLine().split("\\s+");
+			stringArray = sc.nextLine().trim().split("\\s+");
 			
-			if (stringArray.length < 4)
+			if (stringArray.length != 3)
 				continue;
 			
-			if (!(lowerBound <= Double.valueOf(stringArray[3]).doubleValue()
-					&& Double.valueOf(stringArray[3]).doubleValue() <= upperBound)){
+			if (!(lowerBound <= Double.valueOf(stringArray[2]).doubleValue()
+					&& Double.valueOf(stringArray[2]).doubleValue() <= upperBound)){
 				numEdges++;
-				source = Integer.valueOf(stringArray[1]);
-				destination = Integer.valueOf(stringArray[2]);
+				source = Integer.valueOf(stringArray[0]);
+				destination = Integer.valueOf(stringArray[1]);
 				graph.addEdge(source, destination);
 				
 			}
 		}
 		
 		sc.close();
+		System.out.println("loaded graph into memory");
 		
 		//Integer maxKey = graph.getGraph().lastKey();
 		
-		for (int i = 0; i <= totalNodes; i++){
+		for (int i = 0; i < totalNodes; i++){
 			graph.addSinkNode(new Integer(i));
 		}
+		
+		System.out.println("added sinks to memory (if any).");
 		
 		int numNodes = graph.numNodes();
 		
@@ -181,6 +196,7 @@ public class Main {
 		}
 		
 		writer.close();
+		System.out.println("finished formatting file");
 		//return graph.getGraph().entrySet().size();
 
 	}
