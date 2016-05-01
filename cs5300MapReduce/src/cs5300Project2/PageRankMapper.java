@@ -21,7 +21,7 @@ public class PageRankMapper extends Mapper<Text, Text, LongWritable, Text> {
 		
 		String graphData = "G" + ivalue.toString();
 		
-		System.out.println("input value is " + ivalue.toString());
+		//System.out.println("input value is " + ivalue.toString());
 		
 		outKey.set(Long.parseLong(ikey.toString()));
 		outValue.set(graphData);

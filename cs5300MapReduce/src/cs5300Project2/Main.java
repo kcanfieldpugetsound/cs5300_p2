@@ -18,11 +18,11 @@ public class Main {
 	private static long numEdges = 0;
 
 	public static void main(String[] args) throws Exception{
-		pageRank(args[0], args[1], args[2]);
+		pageRank(args[0], args[1], args[2], args[3], args[4]);
 	}
 
 	@SuppressWarnings("unused")
-	private static void pageRank(String inputFile, String outputDir, String numRuns) throws Exception{
+	private static void pageRank(String inputFile, String outputDir, String numRuns, String numberofnodes, String shouldPreprocess) throws Exception{
 		Configuration config = new Configuration();
 		Path output = new Path(outputDir);
 		output.getFileSystem(config).delete(output, true);
@@ -34,9 +34,11 @@ public class Main {
 		
 		File formattedInputFile = new File(output.toString() + "/formattedInput.txt");
 		
-		int totalNodes = 10;
+		int totalNodes = Integer.parseInt(numberofnodes);
 		
-		int numNodes = createFormattedFile(inputFile, formattedInputFile, totalNodes);
+		
+		if (shouldPreprocess.equals("1"))
+			createFormattedFile(inputFile, formattedInputFile, totalNodes);
 		
 		//System.out.println(input.toString());
 		double converged = 0.001;
@@ -98,12 +100,12 @@ public class Main {
 		
 	}
 
-	private static int createFormattedFile(String inputFile, File formattedInputFile, int totalNodes) throws Exception{
+	private static void createFormattedFile(String inputFile, File formattedInputFile, int totalNodes) throws Exception{
 		File file = new File(inputFile);
 		
 		Scanner sc = new Scanner(file);
 		
-		Graph graph = new Graph();
+		Graph graph = new Graph(totalNodes);
 		
 		
 		String[] stringArray = null;
@@ -115,6 +117,9 @@ public class Main {
 		
 		while (sc.hasNextLine()){
 			stringArray = sc.nextLine().split("\\s+");
+			
+			if (stringArray.length < 4)
+				continue;
 			
 			if (!(lowerBound <= Double.valueOf(stringArray[3]).doubleValue()
 					&& Double.valueOf(stringArray[3]).doubleValue() <= upperBound)){
@@ -163,7 +168,7 @@ public class Main {
 		}
 		
 		writer.close();
-		return graph.getGraph().entrySet().size();
+		//return graph.getGraph().entrySet().size();
 
 	}
 	

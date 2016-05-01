@@ -1,13 +1,13 @@
 package cs5300Project2;
 
-import java.util.TreeMap;
+import java.util.HashMap;
 
 public class Graph {
 	
-	private TreeMap<Integer, AdjacencyList> graph = new TreeMap<Integer, AdjacencyList>();
+	private HashMap<Integer, AdjacencyList> graph;
 	
-	public Graph(){
-		
+	public Graph(int totalNodes){
+		graph = new HashMap<Integer, AdjacencyList>(totalNodes); 
 	}
 	
 	public void addEdge(Integer source, Integer destination){
@@ -25,21 +25,18 @@ public class Graph {
 		return graph.keySet().size();
 	}
 	
-	public TreeMap<Integer, AdjacencyList> getGraph(){
+	public HashMap<Integer, AdjacencyList> getGraph(){
 		return graph;
-	}
-	
-	private boolean nodeInGraph(Integer node){
-		return graph.containsKey(node);
 	}
 	
 	public void addSinkNode(Integer node){
 		
-		if (nodeInGraph(node))
+		if (graph.containsKey(node))
 			return;
-		
-		AdjacencyList aList = new AdjacencyList();
-		graph.put(node, aList);
+		else{
+			AdjacencyList aList = new AdjacencyList();
+			graph.put(node, aList);
+		}
 	}
 
 }
