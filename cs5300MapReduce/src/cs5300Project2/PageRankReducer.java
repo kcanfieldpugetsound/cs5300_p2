@@ -1,6 +1,7 @@
 package cs5300Project2;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -32,8 +33,8 @@ public class PageRankReducer extends Reducer<LongWritable, Text, Text, Text> {
 		
 		//process incoming data
 		
-		Node n;
-		List<Double> incomingPageRanks = new ArrayList<Double>();
+		Node n =null;
+		ArrayList<Double> incomingPageRanks = new ArrayList<Double>();
 		for (Text t : values) {
 			String text = t.toString();
 			char type = text.charAt(0);
@@ -51,12 +52,12 @@ public class PageRankReducer extends Reducer<LongWritable, Text, Text, Text> {
 		//perform page rank algorithm
 		
 		//shift currPageRank -> prevPageRank
-		n.setPrevPageRank(n.getCurrPageRank);
+		n.setPrevPageRank(n.getCurrPageRank());
 		n.setCurrPageRank(0);
 		
 		//add page ranks to node
-		double oldPR;
-		double newPR;
+		double oldPR = 0.0;
+		double newPR = 0.0;
 		for (Double pr : incomingPageRanks) {
 			oldPR = n.getCurrPageRank();
 			newPR = oldPR + pr;
@@ -64,7 +65,7 @@ public class PageRankReducer extends Reducer<LongWritable, Text, Text, Text> {
 		}
 		
 		//apply damping factor
-		newPR = ((1 - ALPHA) / numNodes)) + (ALPHA * newPR);
+		newPR = ((1 - ALPHA) / numNodes) + (ALPHA * newPR);
 		
 		//calculate convergence
 		long delta = (long) 
@@ -73,10 +74,10 @@ public class PageRankReducer extends Reducer<LongWritable, Text, Text, Text> {
 		
 		context.getCounter(Counter.CONVERGENCE).increment(delta);
 		
-		outValue.set(graph);
+		//outValue.set(graph);
 		
 		//write results
-		outKey.set(n.nodeId());
+		outKey.set(String.valueOf(n.nodeId()));
 		outValue.set(n.toString());
 		
 		context.write(outKey, outValue);

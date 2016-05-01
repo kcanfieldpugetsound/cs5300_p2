@@ -18,27 +18,40 @@ public class Main {
 	private static long numEdges = 0;
 
 	public static void main(String[] args) throws Exception{
-		pageRank(args[0], args[1], args[2], args[3], args[4]);
+		
+		if (args.length == 3)
+		pageRank(args[0], args[1], args[2]);
+		else{
+			System.err.println("This jar takes three arguments: the directory where your input file (must be called input.txt) is, "
+					+ "the number of runs you want to execute, "
+					+ "and the total number nodes in your graph (to make sinks)");
+			System.err.println("Each run will appear as a subdirectory in your input directory");
+			System.err.println("You can generate the input file from our blocked Map Reduce. This will ignore the blocks data");
+			
+		}
+		
 	}
+	
+	
 
 	@SuppressWarnings("unused")
-	private static void pageRank(String inputFile, String outputDir, String numRuns, String numberofnodes, String shouldPreprocess) throws Exception{
-		Configuration config = new Configuration();
+	private static void pageRank(String outputDir, String numRuns, String numberofnodes) throws Exception{
+		//Configuration config = new Configuration();
 		Path output = new Path(outputDir);
-		output.getFileSystem(config).delete(output, true);
-		output.getFileSystem(config).mkdirs(output);
+		//output.getFileSystem(config).delete(output, true);
+		//output.getFileSystem(config).mkdirs(output);
 		
-		Path input = new Path(output, "formattedInput.txt");
+		Path input = new Path(output, "input.txt");
 		
 		int maxRuns = Integer.parseInt(numRuns);
 		
-		File formattedInputFile = new File(output.toString() + "/formattedInput.txt");
+		File formattedInputFile = new File(output.toString() + "/input.txt");
 		
 		int totalNodes = Integer.parseInt(numberofnodes);
 		
 		
-		if (shouldPreprocess.equals("1"))
-			createFormattedFile(inputFile, formattedInputFile, totalNodes);
+		//if (shouldPreprocess.equals("1"))
+			//createFormattedFile(inputFile, formattedInputFile, totalNodes);
 		
 		//System.out.println(input.toString());
 		double converged = 0.001;
