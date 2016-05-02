@@ -19,9 +19,9 @@ public class Main {
 
 	public static void main(String[] args) throws Exception{
 		
-		if (args[0].equals("run") && args.length == 4)
+		if (args.length == 4 && args[0].equals("run"))
 		pageRank(args[1], args[2], args[3]);
-		else if (args[0].equals("pre") && args.length == 4){
+		else if (args.length == 4 && args[0].equals("pre")){
 			Path output = new Path(args[2]);
 			File formattedInputFile =  new File(output.toString() + "/input.txt");
 			createFormattedFile(args[1], formattedInputFile, Integer.parseInt(args[3]));
