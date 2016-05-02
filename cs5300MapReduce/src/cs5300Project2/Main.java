@@ -41,7 +41,7 @@ public class Main {
 	
 	
 /**
- * 
+ * This runs numRuns iterations of pageRank. It also does convergence logging and handles the filesystem setup. 
  * @param outputDir: the directory where output files are written, has input.txt in its top level
  * @param numRuns: number of mapReduce runs to run
  * @param numberofnodes: total number of nodes (the reason for this is explained in the README)
@@ -106,7 +106,7 @@ public class Main {
 	}
 	
 	/**
-	 * This will do all the configuration for a mapReduce job and run it 
+	 * This will do all the configuration for a single mapReduce job and run it. 
 	 * @param input The input folder. The input file is in here
 	 * @param jobOutput The folder where to write the reduce output
 	 * @param numNodes explained in README
