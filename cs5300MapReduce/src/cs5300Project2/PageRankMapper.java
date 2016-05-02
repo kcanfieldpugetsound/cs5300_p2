@@ -11,6 +11,16 @@ public class PageRankMapper extends Mapper<Text, Text, LongWritable, Text> {
 	private LongWritable outKey = new LongWritable();
 	private Text outValue = new Text();
 
+	
+	/**
+	 * This method takes the input file/data, reads through line by line, and processes each line.
+	 * Each line is in the format "nodeId"<one tab>nodeId#$child1,child2,child3,...,childN#prevPageRank#currPageRank
+	 * the adjacency list can be empty. 
+	 * 
+	 * We first emit the key and the entire line(putting in a label to say it is graph data), so that the graph data is maintained.
+	 * Then we check the adjacency list. If it is empty, then we are done with this input. Otherwise, we go through each child node,  
+	 * and output <childNode, parentPageRank / parentNumChildren>. 
+	 */
 	public void map(Text ikey, Text ivalue, Context context) throws IOException, InterruptedException {
 		
 		if (ivalue.toString().equals(""))

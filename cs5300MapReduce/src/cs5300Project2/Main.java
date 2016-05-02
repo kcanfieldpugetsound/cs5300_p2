@@ -40,7 +40,13 @@ public class Main {
 	}
 	
 	
-
+/**
+ * 
+ * @param outputDir: the directory where output files are written, has input.txt in its top level
+ * @param numRuns: number of mapReduce runs to run
+ * @param numberofnodes: total number of nodes (the reason for this is explained in the README)
+ * @throws Exception: MapReduce failures
+ */
 	
 	private static void pageRank(String outputDir, String numRuns, String numberofnodes) throws Exception{
 		Configuration config = new Configuration();
@@ -73,7 +79,7 @@ public class Main {
 		
 		
 		PrintWriter logger = new PrintWriter(convergenceFile);
-		logger.println("Number of edges is " + numEdges);
+		//logger.println("Number of edges is " + numEdges);
 		int currentIteration = 1;
 		System.out.println("finshed configuration. Starting mapreduce.");
 		while(currentIteration <= maxRuns){
@@ -90,6 +96,7 @@ public class Main {
 			
 			input = jobOutput;
 			currentIteration++;
+			logger.flush();
 		}
 		
 		logger.close();
@@ -97,6 +104,15 @@ public class Main {
 		
 		
 	}
+	
+	/**
+	 * This will do all the configuration for a mapReduce job and run it 
+	 * @param input The input folder. The input file is in here
+	 * @param jobOutput The folder where to write the reduce output
+	 * @param numNodes explained in README
+	 * @return
+	 * @throws Exception
+	 */
 
 	private static double runPageRank(Path input, Path jobOutput, int numNodes) throws Exception {
 		Configuration config = new Configuration();
@@ -127,6 +143,14 @@ public class Main {
 		
 		
 	}
+	
+	/**
+	 * This file converts the raw input into a file usable by our mapper and reducer
+	 * @param inputFile The file to be converted to our mapReduce input/output format
+	 * @param formattedInputFile The file the formatted data will be written to
+	 * @param totalNodes reason explained in README
+	 * @throws Exception
+	 */
 
 	private static void createFormattedFile(String inputFile, File formattedInputFile, int totalNodes) throws Exception{
 		File file = new File(inputFile);
@@ -200,6 +224,7 @@ public class Main {
 		
 		writer.close();
 		System.out.println("finished formatting file");
+		System.out.println("Number of edges added: " + numEdges);
 		//return graph.getGraph().entrySet().size();
 
 	}
