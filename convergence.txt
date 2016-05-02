@@ -1,0 +1,2 @@
+Number of edges is 0
+Convergence on run 1: 2.33869051822016
